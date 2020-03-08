@@ -14,8 +14,18 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = "scrapy-extensions"
-DESCRIPTION = "A collection of Scrapy extensions"
-KEYWORDS = ("Scrapy", "extension", "extensions")
+DESCRIPTION = "A collection of Scrapy extensions and other utilities"
+KEYWORDS = (
+    "Scrapy",
+    "extension",
+    "extensions",
+    "utilities",
+    "items",
+    "loaders",
+    "loggers",
+    "middleware",
+    "pipelines",
+)
 URL_HOMEPAGE = "https://gitlab.com/mshepherd/scrapy-extensions"
 URL_DOCUMENTATION = (
     "https://gitlab.com/mshepherd/scrapy-extensions/blob/master/README.md"
