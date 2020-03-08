@@ -30,7 +30,7 @@ REQUIRES_PYTHON = ">=3.5.0"
 VERSION = None  # will be read from __version__.py
 
 # What packages are required for this module to be executed?
-REQUIRED = ("Scrapy",)
+REQUIRED = ("pytility", "jmespath", "Scrapy", "Twisted", "w3lib")
 
 # What packages are optional?
 EXTRAS = {}
