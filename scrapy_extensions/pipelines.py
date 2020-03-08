@@ -16,11 +16,14 @@ class ValidatePipeline:
     def process_item(self, item, spider):
         """Verify if all required fields are present."""
 
-        if all(
-            item.get(field)
-            for field in item.fields
-            if item.fields[field].get("required")
-        ):
-            return item
+        fields = getattr(item, "fields", {})
+        missing = [
+            field
+            for field, info in fields.items()
+            if info.get("required") and not item.get(field)
+        ]
 
-        raise DropItem("Missing required field in {}".format(item))
+        if missing:
+            raise DropItem(f"required fields missing {missing} from item {item}")
+
+        return item
