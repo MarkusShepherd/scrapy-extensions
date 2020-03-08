@@ -14,8 +14,18 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = "scrapy-extensions"
-DESCRIPTION = "A collection of Scrapy extensions"
-KEYWORDS = ("Scrapy", "extension", "extensions")
+DESCRIPTION = "A collection of Scrapy extensions and other utilities"
+KEYWORDS = (
+    "Scrapy",
+    "extension",
+    "extensions",
+    "utilities",
+    "items",
+    "loaders",
+    "loggers",
+    "middleware",
+    "pipelines",
+)
 URL_HOMEPAGE = "https://gitlab.com/mshepherd/scrapy-extensions"
 URL_DOCUMENTATION = (
     "https://gitlab.com/mshepherd/scrapy-extensions/blob/master/README.md"
@@ -26,11 +36,11 @@ URL_SOURCE = "https://gitlab.com/mshepherd/scrapy-extensions"
 URL_TRACKER = "https://gitlab.com/mshepherd/scrapy-extensions/issues"
 EMAIL = "markus.r.shepherd@gmail.com"
 AUTHOR = "Markus Shepherd"
-REQUIRES_PYTHON = ">=3.5.0"
+REQUIRES_PYTHON = ">=3.6.0"
 VERSION = None  # will be read from __version__.py
 
 # What packages are required for this module to be executed?
-REQUIRED = ("Scrapy",)
+REQUIRED = ("pytility", "jmespath", "Scrapy", "Twisted", "w3lib")
 
 # What packages are optional?
 EXTRAS = {}
@@ -133,7 +143,6 @@ setup(
         "Framework :: Scrapy",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
