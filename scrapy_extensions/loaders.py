@@ -16,7 +16,7 @@ class JsonLoader(ItemLoader):
 
     def __init__(self, response=None, json_obj=None, **kwargs):
         response = response if hasattr(response, "text") else None
-        super(JsonLoader, self).__init__(response=response, **kwargs)
+        super().__init__(response=response, **kwargs)
 
         if json_obj is None and response is not None:
             json_obj = json.loads(response.text)
