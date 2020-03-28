@@ -13,6 +13,8 @@ from pytility import normalize_space
 from scrapy import Spider
 from scrapy.utils.misc import arg_to_iter
 
+from .loaders import WebpageLoader
+
 ID_REGEX = re.compile(r"\W+")
 
 
@@ -58,8 +60,7 @@ class WebsiteSpider(Spider):
     """Spider to extract meta information from websites."""
 
     name = "website"
-    item_cls = TODO
-    loader_cls = TODO
+    loader_cls = WebpageLoader
 
     def parse(self, response):
         """To be implemented by subclass."""
@@ -96,7 +97,7 @@ class WebsiteSpider(Spider):
         meta = meta_dict(response)
         parsely = parsely_dict(response)
 
-        loader = ToDoLoader(response=response)
+        loader = self.loader_cls(item=item, response=response)
 
         loader.add_value("url_canonical", url_canonical)
         loader.add_value("url_mobile", url_mobile)

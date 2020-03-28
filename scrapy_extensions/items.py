@@ -2,6 +2,7 @@
 
 """ Scrapy items """
 
+import json
 import logging
 
 from datetime import datetime
@@ -12,6 +13,27 @@ from scrapy.loader.processors import Identity, MapCompose
 
 IDENTITY = Identity()
 LOGGER = logging.getLogger(__name__)
+
+
+def parse_json(item):
+    # TODO
+    return json.loads(item)
+
+
+def serialize_date(date, tzinfo=None):
+    # TODO
+    date = parse_date(date, tzinfo=tzinfo)
+    return str(date) if date else None
+
+
+def parse_geo(item):
+    # TODO
+    return None
+
+
+def serialize_geo(item):
+    # TODO
+    return None
 
 
 class TypedItem(Item):
