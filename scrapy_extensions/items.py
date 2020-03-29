@@ -7,7 +7,7 @@ import logging
 
 from datetime import datetime
 
-from pytility import clear_list, normalize_space, parse_date
+from pytility import clear_list, normalize_space, parse_date, parse_int
 from scrapy import Field, Item
 from scrapy.loader.processors import Identity, MapCompose
 
@@ -166,17 +166,15 @@ class WebpageItem(TypedItem):
         serializer=serialize_date,
     )
 
-    title_full = Field(dtype=str, required=True,)
+    title_full = Field(dtype=str, required=True)
     title_tag = Field(dtype=str)
-    title_short = Field(dtype=str, required=True,)
+    title_short = Field(dtype=str, required=True)
     author = Field(dtype=list, output_processor=clear_list, parser=parse_json)
-    summary = Field(dtype=str,)
-    full_html = Field(
-        dtype=str, input_processor=MapCompose(IDENTITY, str, normalize_space)
-    )
+    summary = Field(dtype=str)
 
     category = Field(dtype=list, output_processor=clear_list, parser=parse_json)
     keyword = Field(dtype=list, output_processor=clear_list, parser=parse_json)
+    section = Field(dtype=list, output_processor=clear_list, parser=parse_json)
 
     country = Field(dtype=list, output_processor=clear_list, parser=parse_json)
     language = Field(dtype=list, output_processor=clear_list, parser=parse_json)
@@ -187,5 +185,25 @@ class WebpageItem(TypedItem):
         serializer=serialize_geo,
     )
 
+    full_html = Field(
+        dtype=str, input_processor=MapCompose(IDENTITY, str, normalize_space)
+    )
     meta_tags = Field(dtype=dict, input_processor=IDENTITY, parser=parse_json)
     parsely_info = Field(dtype=dict, input_processor=IDENTITY, parser=parse_json)
+
+
+class ArticleItem(WebpageItem):
+    """Item representing a webpage with main content."""
+
+    content = Field(dtype=str)
+    content_html = Field(dtype=str)
+
+    article_info = Field(dtype=dict, input_processor=IDENTITY, parser=parse_json)
+
+    source_name = Field(dtype=str)
+    source_category = Field(dtype=list, output_processor=clear_list, parser=parse_json)
+    source_url = Field(dtype=str, input_processor=MapCompose(normalize_url))
+    source_ranking = Field(
+        dtype=int, dtype_convert=parse_int, input_processor=MapCompose(parse_int)
+    )
+    source_info = Field(dtype=dict, input_processor=IDENTITY, parser=parse_json)

@@ -248,3 +248,14 @@ class WebsiteSpider(Spider):
         loader.add_value("parsely_info", parsely)
 
         return loader.load_item()
+
+
+class ArticleSpider(WebsiteSpider):
+    """Spider to extract the main content of a webpage along with meta data."""
+
+    def __init__(self, *args, **kwargs):
+        from readability import Document
+
+        super().__init__(*args, **kwargs)
+
+        self.document_cls = Document
