@@ -124,7 +124,6 @@ class WebpageItem(TypedItem):
     updated_at = Field(
         dtype=datetime,
         dtype_convert=parse_date,
-        required=True,
         input_processor=DATE_PROCESSOR,
         serializer=serialize_date,
     )

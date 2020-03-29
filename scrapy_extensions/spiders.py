@@ -121,8 +121,8 @@ class WebsiteSpider(Spider):
         # TODO updated_at
 
         loader.add_value("title_full", meta.get("title"))
-        loader.add_xpath("title_full", "//head/title")
-        loader.add_xpath("title_tag", "//head/title")
+        loader.add_xpath("title_full", "//head/title/text()")
+        loader.add_xpath("title_tag", "//head/title/text()")
         loader.add_value("title_short", parsely.get("headline"))
         loader.add_value("title_short", meta.get("headline"))
         loader.add_value("title_short", meta.get("parsely_title"))
@@ -132,7 +132,7 @@ class WebsiteSpider(Spider):
         loader.add_value("title_short", meta.get("dcterms_title"))
         loader.add_value("title_short", meta.get("sailthru_title"))
         loader.add_value("title_short", meta.get("twitter_title"))
-        loader.add_xpath("title_short", "//head/title")
+        loader.add_xpath("title_short", "//head/title/text()")
 
         loader.add_value("author", meta.get("author"))
         loader.add_value("author", meta.get("dc_creator"))
