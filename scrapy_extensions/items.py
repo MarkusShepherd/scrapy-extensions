@@ -2,7 +2,6 @@
 
 """ Scrapy items """
 
-import json
 import logging
 
 from datetime import datetime
@@ -12,7 +11,14 @@ from pytility import clear_list, normalize_space, parse_date, parse_int
 from scrapy import Field, Item
 from scrapy.loader.processors import Identity, MapCompose
 
-from .utils import validate_url
+from .utils import (
+    normalize_url,
+    parse_geo,
+    parse_json,
+    serialize_geo,
+    serialize_date,
+    validate_url,
+)
 
 IDENTITY = Identity()
 LOGGER = logging.getLogger(__name__)
@@ -23,27 +29,7 @@ URL_PROCESSOR = MapCompose(
     normalize_url,
     partial(validate_url, schemes=frozenset(("http", "https"))),
 )
-
-
-def parse_json(item):
-    # TODO
-    return json.loads(item)
-
-
-def serialize_date(date, tzinfo=None):
-    # TODO
-    date = parse_date(date, tzinfo=tzinfo)
-    return str(date) if date else None
-
-
-def parse_geo(item):
-    # TODO
-    return None
-
-
-def serialize_geo(item):
-    # TODO
-    return None
+DATE_PROCESSOR = MapCompose(IDENTITY, str, normalize_space, parse_date)
 
 
 class TypedItem(Item):
@@ -108,19 +94,6 @@ class TypedItem(Item):
         return cls({k: v for k, v in item.items() if v and k in cls.fields})
 
 
-def normalize_url(url, loader_context=None):
-    """Expand URL fragments."""
-
-    # TODO other normalizations, e.g., sort parameters etc
-
-    try:
-        return loader_context["response"].urljoin(url)
-    except Exception:
-        pass
-
-    return "http:" + url if url.startswith("//") else url
-
-
 class WebpageItem(TypedItem):
     """Item representing a scraped webpage's meta data."""
 
@@ -145,21 +118,21 @@ class WebpageItem(TypedItem):
         dtype=datetime,
         dtype_convert=parse_date,
         required=True,
-        input_processor=MapCompose(IDENTITY, str, normalize_space, parse_date),
+        input_processor=DATE_PROCESSOR,
         serializer=serialize_date,
     )
     updated_at = Field(
         dtype=datetime,
         dtype_convert=parse_date,
         required=True,
-        input_processor=MapCompose(IDENTITY, str, normalize_space, parse_date),
+        input_processor=DATE_PROCESSOR,
         serializer=serialize_date,
     )
     scraped_at = Field(
         dtype=datetime,
         dtype_convert=parse_date,
         required=True,
-        input_processor=MapCompose(IDENTITY, str, normalize_space, parse_date),
+        input_processor=DATE_PROCESSOR,
         serializer=serialize_date,
     )
 

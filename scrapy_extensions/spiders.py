@@ -9,7 +9,6 @@ from datetime import datetime, timezone
 
 import jmespath
 
-from pytility import normalize_space
 from scrapy import Spider
 from scrapy.utils.misc import arg_to_iter
 
