@@ -171,6 +171,9 @@ class WebpageItem(TypedItem):
     title_short = Field(dtype=str, required=True,)
     author = Field(dtype=list, output_processor=clear_list, parser=parse_json)
     summary = Field(dtype=str,)
+    full_html = Field(
+        dtype=str, input_processor=MapCompose(IDENTITY, str, normalize_space)
+    )
 
     category = Field(dtype=list, output_processor=clear_list, parser=parse_json)
     keyword = Field(dtype=list, output_processor=clear_list, parser=parse_json)

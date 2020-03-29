@@ -179,7 +179,10 @@ class WebsiteSpider(Spider):
         loader.add_value("summary", meta.get("content"))
         loader.add_value("summary", meta.get("excerpt"))
         loader.add_value("summary", meta.get("sailthru_description"))
-        # TODO full HTML
+
+        if hasattr(response, "text"):
+            loader.add_value("full_html", response.text)
+        loader.add_xpath("full_html", "/html")
 
         loader.add_value("category", meta.get("category"))
         loader.add_value("category", meta.get("cg"))
