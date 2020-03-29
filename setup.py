@@ -43,7 +43,7 @@ VERSION = None  # will be read from __version__.py
 REQUIRED = ("pytility", "jmespath", "Scrapy", "Twisted", "w3lib")
 
 # What packages are optional?
-EXTRAS = {}
+EXTRAS = {"articles": ("readability-lxml",)}
 
 # The rest you shouldn't have to touch too much :)
 # ------------------------------------------------

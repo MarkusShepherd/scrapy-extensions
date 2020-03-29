@@ -9,6 +9,7 @@ python_version = "3.7"
 [packages]
 jmespath = "*"
 pytility = "*"
+readability-lxml = "*"
 scrapy = "*"
 twisted = "*"
 w3lib = "*"
