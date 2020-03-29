@@ -72,38 +72,22 @@ class WebsiteSpider(Spider):
 
         now = datetime.now(timezone.utc).isoformat()
 
-        url_canonical = response.urljoin(
-            normalize_space(
-                response.xpath("//link[@rel = 'canonical']/@href[.]").extract_first()
-            )
-            or response.url
-        )
-        url_amp = normalize_space(
-            response.xpath("//link[@rel = 'amphtml']/@href[.]").extract_first()
-        )
-        url_amp = response.urljoin(url_amp) if url_amp else None
-        url_mobile = normalize_space(
-            response.xpath(
-                "//link[@rel = 'alternate' and @media]/@href[.]"
-            ).extract_first()
-        )
-        url_mobile = response.urljoin(url_mobile) if url_mobile else url_amp
-        url_alt = (
-            normalize_space(url)
-            for url in response.xpath("//link[@rel = 'alternate']/@href[.]").extract()
-        )
-        url_alt = [response.urljoin(url) for url in url_alt if url]
-
         meta = meta_dict(response)
         parsely = parsely_dict(response)
 
         loader = self.loader_cls(item=item, response=response)
+        loader.context["response"] = response
+        loader.context["meta"] = meta
+        loader.context["parsely"] = parsely
 
-        loader.add_value("url_canonical", url_canonical)
-        loader.add_value("url_mobile", url_mobile)
-        loader.add_value("url_amp", url_amp)
+        loader.add_xpath("url_canonical", "//link[@rel = 'canonical']/@href")
+        loader.add_value("url_canonical", response.url)
+        loader.add_xpath("url_amp", "//link[@rel = 'amphtml']/@href")
+        loader.add_xpath("url_mobile", "//link[@rel = 'alternate' and @media]/@href")
+        loader.add_xpath("url_mobile", "//link[@rel = 'amphtml']/@href")
         loader.add_value("url_scraped", response.url)
-        loader.add_value("url_alt", url_alt)
+        loader.add_xpath("url_alt", "//link[@rel = 'alternate']/@href")
+
         loader.add_value(
             "url_thumbnail", jmespath.search("thumbnailUrl[].url", parsely)
         )
@@ -121,7 +105,7 @@ class WebsiteSpider(Spider):
         loader.add_value("url_thumbnail", meta.get("sailthru_image_thumb"))
         loader.add_value("url_thumbnail", meta.get("sailthru_image_full"))
         loader.add_value("url_thumbnail", meta.get("sailthru_lead_image"))
-        loader.add_xpath("url_thumbnail", "//body//img/@src[.]")
+        loader.add_xpath("url_thumbnail", "//body//img/@src")
 
         loader.add_value("published_at", meta.get("pub_date"))
         loader.add_value("published_at", meta.get("pubdate"))

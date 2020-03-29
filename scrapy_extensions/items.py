@@ -6,13 +6,23 @@ import json
 import logging
 
 from datetime import datetime
+from functools import partial
 
 from pytility import clear_list, normalize_space, parse_date, parse_int
 from scrapy import Field, Item
 from scrapy.loader.processors import Identity, MapCompose
 
+from .utils import validate_url
+
 IDENTITY = Identity()
 LOGGER = logging.getLogger(__name__)
+
+URL_PROCESSOR = MapCompose(
+    IDENTITY,
+    normalize_space,
+    normalize_url,
+    partial(validate_url, schemes=frozenset(("http", "https"))),
+)
 
 
 def parse_json(item):
@@ -103,13 +113,6 @@ def normalize_url(url, loader_context=None):
 
     # TODO other normalizations, e.g., sort parameters etc
 
-    url = normalize_space(url)
-
-    if not url:
-        return None
-
-    loader_context = loader_context or {}
-
     try:
         return loader_context["response"].urljoin(url)
     except Exception:
@@ -121,25 +124,19 @@ def normalize_url(url, loader_context=None):
 class WebpageItem(TypedItem):
     """Item representing a scraped webpage's meta data."""
 
-    url_canonical = Field(
-        dtype=str, required=True, input_processor=MapCompose(normalize_url)
-    )
-    url_mobile = Field(dtype=str, input_processor=MapCompose(normalize_url))
-    url_amp = Field(dtype=str, input_processor=MapCompose(normalize_url))
-    url_scraped = Field(
-        dtype=str, required=True, input_processor=MapCompose(normalize_url)
-    )
+    url_canonical = Field(dtype=str, required=True, input_processor=URL_PROCESSOR)
+    url_mobile = Field(dtype=str, input_processor=URL_PROCESSOR)
+    url_amp = Field(dtype=str, input_processor=URL_PROCESSOR)
+    url_scraped = Field(dtype=str, required=True, input_processor=URL_PROCESSOR)
     url_alt = Field(
         dtype=list,
-        input_processor=MapCompose(normalize_url),
+        input_processor=URL_PROCESSOR,
         output_processor=clear_list,
         parser=parse_json,
     )
     url_thumbnail = Field(
         dtype=list,
-        input_processor=MapCompose(
-            normalize_url, lambda item: None if item.startswith("data:") else item
-        ),
+        input_processor=URL_PROCESSOR,
         output_processor=clear_list,
         parser=parse_json,
     )
@@ -202,7 +199,7 @@ class ArticleItem(WebpageItem):
 
     source_name = Field(dtype=str)
     source_category = Field(dtype=list, output_processor=clear_list, parser=parse_json)
-    source_url = Field(dtype=str, input_processor=MapCompose(normalize_url))
+    source_url = Field(dtype=str, input_processor=URL_PROCESSOR)
     source_ranking = Field(
         dtype=int, dtype_convert=parse_int, input_processor=MapCompose(parse_int)
     )
