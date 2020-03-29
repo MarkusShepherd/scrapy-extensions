@@ -15,11 +15,9 @@ class TypedItem(Item):
     """ Item with typed fields """
 
     def __setitem__(self, key, value):
+        super().__setitem__(key, value)
+
         field = self.fields.get(key) or {}
-        setter = field.get("setter", IDENTITY)
-
-        super().__setitem__(key, setter(value))
-
         dtype = field.get("dtype")
         convert = field.get("dtype_convert")
 
@@ -42,7 +40,7 @@ class TypedItem(Item):
 
         assert isinstance(value, dtype) or value is None
 
-        super().__setitem__(key, setter(value))
+        super().__setitem__(key, value)
 
     @classmethod
     def parse(cls, item):
