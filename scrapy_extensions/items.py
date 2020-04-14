@@ -4,7 +4,7 @@
 
 import logging
 
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import partial
 
 from pytility import clear_list, normalize_space, parse_date, parse_int
@@ -23,13 +23,16 @@ from .utils import (
 IDENTITY = Identity()
 LOGGER = logging.getLogger(__name__)
 
+DATE_PROCESSOR = MapCompose(
+    IDENTITY, str, normalize_space, partial(parse_date, tzinfo=timezone.utc)
+)
 URL_PROCESSOR = MapCompose(
     IDENTITY,
+    str,
     normalize_space,
     normalize_url,
     partial(validate_url, schemes=frozenset(("http", "https"))),
 )
-DATE_PROCESSOR = MapCompose(IDENTITY, str, normalize_space, parse_date)
 
 
 class TypedItem(Item):

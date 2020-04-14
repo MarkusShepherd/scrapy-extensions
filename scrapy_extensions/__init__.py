@@ -16,3 +16,4 @@ from .loggers import QuietLogFormatter
 from .middleware import DelayedRetry
 from .pipelines import ValidatePipeline
 from .spiders import ArticleSpider, WebsiteSpider
+from .utils import normalize_url, parse_url, validate_url
