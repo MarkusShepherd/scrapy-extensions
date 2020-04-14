@@ -316,9 +316,9 @@ class ArticleSpider(WebsiteSpider):
         loader.add_value("content", content)
         loader.add_value("content_html", content_html)
 
-        loader.add_value("title_full", main_content.get("title"))
+        loader.replace_value("title_full", main_content.get("title"))
         loader.add_value("title_full", title_full)
-        loader.add_value("title_short", main_content.get("title_short"))
+        loader.replace_value("title_short", main_content.get("title_short"))
         loader.add_value("title_short", title_short)
 
         # TODO add article and source info
