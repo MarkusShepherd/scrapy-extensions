@@ -304,6 +304,7 @@ class ArticleSpider(WebsiteSpider):
         item = self.parse_page(response=response, item=item)
         title_full = item.get("title_full")
         title_short = item.get("title_short")
+        summary = item.get("summary")
 
         loader = self.loader_cls(item=item, response=response)
         loader.context["response"] = response
@@ -314,6 +315,7 @@ class ArticleSpider(WebsiteSpider):
         content = self.to_markdown(content_html)
 
         loader.add_value("content", content)
+        loader.add_value("content", summary)
         loader.add_value("content_html", content_html)
 
         loader.replace_value("title_full", main_content.get("title"))
