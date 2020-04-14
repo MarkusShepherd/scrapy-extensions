@@ -12,7 +12,7 @@ from scrapy.loader.processors import Identity, MapCompose, TakeFirst
 from scrapy.utils.misc import arg_to_iter
 from scrapy.utils.python import flatten
 
-from .items import WebpageItem
+from .items import ArticleItem, WebpageItem
 
 
 class JsonLoader(ItemLoader):
@@ -59,3 +59,9 @@ class WebpageLoader(ItemLoader):
     default_item_class = WebpageItem
     default_input_processor = MapCompose(Identity(), str, normalize_space)
     default_output_processor = TakeFirst()
+
+
+class ArticleLoader(WebpageLoader):
+    """Article item loader."""
+
+    default_item_class = ArticleItem

@@ -12,7 +12,7 @@ import jmespath
 from scrapy import Spider
 from scrapy.utils.misc import arg_to_iter
 
-from .loaders import WebpageLoader
+from .loaders import ArticleLoader, WebpageLoader
 
 ID_REGEX = re.compile(r"\W+")
 
@@ -236,9 +236,91 @@ class WebsiteSpider(Spider):
 class ArticleSpider(WebsiteSpider):
     """Spider to extract the main content of a webpage along with meta data."""
 
+    name = "article"
+    loader_cls = ArticleLoader
+
     def __init__(self, *args, **kwargs):
+        from html2text import HTML2Text
         from readability import Document
 
         super().__init__(*args, **kwargs)
 
         self.document_cls = Document
+        self.markdown_cls = HTML2Text
+
+        self.readability_args = {}  # TODO
+
+    def get_content(self, html):
+        """Extract main content with readability."""
+
+        if not html:
+            return {}
+
+        try:
+            doc = self.document_cls(html, **self.readability_args)
+            return {
+                "content": doc.summary(html_partial=True),
+                "title": doc.title(),
+                "title_short": doc.short_title(),
+            }
+
+        except Exception:
+            self.logger.exception("Unable to create summary")
+
+        return {}
+
+    def to_markdown(self, html):
+        """Turn HTML into Markdown."""
+
+        if not html:
+            return None
+
+        markdown_maker = self.markdown_cls(bodywidth=0)
+
+        markdown_maker.ignore_emphasis = True
+        markdown_maker.ignore_images = True
+        markdown_maker.ignore_links = True
+        markdown_maker.ignore_tables = True
+
+        result = markdown_maker.handle(html)
+
+        try:
+            markdown_maker.close()
+        except Exception:
+            self.logger.exception("There was an error in HTML2Text")
+        finally:
+            del markdown_maker
+
+        return result
+
+    def parse(self, response):
+        """To be implemented by subclass."""
+
+        yield from arg_to_iter(self.parse_article(response))
+
+    def parse_article(self, response, item=None):
+        """Parses an article."""
+
+        item = self.parse_page(response=response, item=item)
+        title_full = item.get("title_full")
+        title_short = item.get("title_short")
+
+        loader = self.loader_cls(item=item, response=response)
+        loader.context["response"] = response
+
+        main_content = self.get_content(response.text)
+
+        content_html = main_content.get("content") or ""
+        content = self.to_markdown(content_html)
+
+        loader.add_value("content", content)
+        loader.add_value("content_html", content_html)
+
+        loader.add_value("title_full", main_content.get("title"))
+        loader.add_value("title_full", title_full)
+        loader.add_value("title_short", main_content.get("title_short"))
+        loader.add_value("title_short", title_short)
+
+        # TODO add article and source info
+
+        return loader.load_item()
