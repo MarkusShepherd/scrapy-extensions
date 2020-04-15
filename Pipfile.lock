@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5d5413b7b644c605a1339b08d985ca81414f1b55d3466711bb13123444475fc5"
+            "sha256": "08814fc833aee037cfbc90773252c4c4f361775a4e915bcf1470a8cca46474b0"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -232,6 +232,13 @@
                 "sha256:9a24494b2602aaf402be5c9e30a0b82d4a5c67528fe8fb475e3f3bc00dd69507"
             ],
             "version": "==19.1.0"
+        },
+        "python-geohash": {
+            "hashes": [
+                "sha256:05a21fcf4eda1a5eddbd291890ade23fc5ddaa6bb98f2ee23d2d384ed14f086d"
+            ],
+            "index": "pypi",
+            "version": "==0.8.5"
         },
         "pytility": {
             "hashes": [

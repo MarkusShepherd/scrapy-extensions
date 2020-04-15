@@ -3,13 +3,18 @@
 """Utility functions."""
 
 import json
+import logging
+import re
 
 from datetime import timezone
 from urllib.parse import ParseResult, urlparse
-from typing import Any, Iterable, Optional, Pattern, Union
+from typing import Any, Dict, Iterable, Optional, Pattern, Union
 
 from pytility import parse_date, to_str
 from scrapy.utils.misc import arg_to_iter
+
+LOGGER = logging.getLogger(__name__)
+DEFAULT_SEP = re.compile(r"\s*[,;:/|]\s*")
 
 
 def normalize_url(url, loader_context=None):
@@ -98,8 +103,63 @@ def serialize_date(date: Any, tzinfo: Optional[timezone] = None) -> Optional[str
     )
 
 
-def parse_geo(item):
-    # TODO
+def _valid_geo(geo):
+    if geo is None or geo.get("lat") is None or geo.get("lon") is None:
+        return False
+
+    try:
+        return -90 <= geo["lat"] <= 90 and -180 <= geo["lon"] <= 180
+    except Exception:
+        LOGGER.exception("Invalid geo data: %s", geo)
+
+    return False
+
+
+def parse_geo(geo: Any) -> Optional[Dict[str, float]]:
+    """parse geo strings and objects"""
+
+    if not geo:
+        return None
+
+    try:
+        json_geo = json.loads(geo)
+    except Exception:
+        pass
+    else:
+        geo = json_geo
+
+    try:
+        result = {"lat": float(geo.get("lat")), "lon": float(geo.get("lon"))}
+        return result if _valid_geo(result) else None
+    except Exception:
+        pass
+
+    try:
+        lat, lon = DEFAULT_SEP.split(geo)
+        result = {"lat": float(lat), "lon": float(lon)}
+        return result if _valid_geo(result) else None
+    except Exception:
+        pass
+
+    try:
+        import geohash
+
+        lat, lon = geohash.decode(geo)
+        result = {"lat": lat, "lon": lon}
+        return result if _valid_geo(result) else None
+    except Exception:
+        pass
+
+    try:
+        # note that string geo-points are ordered as lat,lon,
+        # while array geo-points are ordered as the reverse: lon,lat
+        # https://www.elastic.co/guide/en/elasticsearch/reference/current/geo-point.html
+        lon, lat = geo
+        result = {"lat": float(lat), "lon": float(lon)}
+        return result if _valid_geo(result) else None
+    except Exception:
+        pass
+
     return None
 
 

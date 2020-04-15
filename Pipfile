@@ -9,6 +9,7 @@ python_version = "3.7"
 [packages]
 "html2text" = "*"
 jmespath = "*"
+python-geohash = "*"
 pytility = "*"
 readability-lxml = "*"
 scrapy = "*"
