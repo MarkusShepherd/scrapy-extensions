@@ -116,7 +116,7 @@ def _valid_geo(geo):
 
 
 def parse_geo(geo: Any) -> Optional[Dict[str, float]]:
-    """parse geo strings and objects"""
+    """Parse geo strings and objects."""
 
     if not geo:
         return None
@@ -163,6 +163,8 @@ def parse_geo(geo: Any) -> Optional[Dict[str, float]]:
     return None
 
 
-def serialize_geo(item):
-    # TODO
-    return None
+def serialize_geo(geo: Any) -> Optional[str]:
+    """Serialize geo object into "lat,lon" format if possible."""
+
+    geo = parse_geo(geo)
+    return "{lat:f},{lon:f}".format(**geo) if geo else None
