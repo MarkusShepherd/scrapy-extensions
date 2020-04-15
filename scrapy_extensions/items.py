@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-""" Scrapy items """
+"""Scrapy items."""
 
 import logging
 

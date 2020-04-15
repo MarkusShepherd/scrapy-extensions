@@ -6,6 +6,7 @@ import json
 import re
 
 from datetime import datetime, timezone
+from urllib.parse import urlparse, urlunparse
 
 import jmespath
 
@@ -73,6 +74,9 @@ class WebsiteSpider(Spider):
 
         meta = meta_dict(response)
         parsely = parsely_dict(response)
+
+        response.meta["meta"] = meta
+        response.meta["parsely"] = parsely
 
         loader = self.loader_cls(item=item, response=response)
         loader.context["response"] = response
@@ -301,7 +305,11 @@ class ArticleSpider(WebsiteSpider):
     def parse_article(self, response, item=None):
         """Parses an article."""
 
+        meta = response.meta.get("meta") or meta_dict(response)
+        parsely = response.meta.get("parsely") or parsely_dict(response)
+
         item = self.parse_page(response=response, item=item)
+        url_canonical = urlparse(item.get("url_canonical") or response.url)
         title_full = item.get("title_full")
         title_short = item.get("title_short")
         summary = item.get("summary")
@@ -324,5 +332,21 @@ class ArticleSpider(WebsiteSpider):
         loader.add_value("title_short", title_short)
 
         # TODO add article and source info
+
+        loader.add_value("source_name", jmespath.search("publisher.name", parsely))
+        loader.add_value("source_name", meta.get("og_site_name"))
+        loader.add_value("source_name", meta.get("dcsext_websitename"))
+        loader.add_value("source_name", meta.get("page_site"))
+        loader.add_value("source_name", meta.get("ms_sitename"))
+        loader.add_value("source_name", meta.get("shareaholic_site_name"))
+        loader.add_value("source_name", meta.get("twitter_app_name_googleplay"))
+        loader.add_value("source_name", meta.get("twitter_app_name_iphone"))
+        loader.add_value("source_name", meta.get("twitter_app_name_ipad"))
+        loader.add_value("source_name", url_canonical.hostname)
+
+        loader.add_value(
+            "source_url",
+            urlunparse((url_canonical.scheme, url_canonical.netloc, "/", "", "", "")),
+        )
 
         return loader.load_item()
