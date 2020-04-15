@@ -4,6 +4,7 @@
 
 import json
 
+from datetime import timezone
 from urllib.parse import ParseResult, urlparse
 from typing import Any, Iterable, Optional, Pattern, Union
 
@@ -88,10 +89,13 @@ def parse_json(
     return None
 
 
-def serialize_date(date, tzinfo=None):
-    # TODO
-    date = parse_date(date, tzinfo=tzinfo)
-    return str(date) if date else None
+def serialize_date(date: Any, tzinfo: Optional[timezone] = None) -> Optional[str]:
+    """Seralize a date into ISO format if possible."""
+
+    parsed = parse_date(date, tzinfo)
+    return (
+        parsed.isoformat(timespec="seconds") if parsed else str(date) if date else None
+    )
 
 
 def parse_geo(item):
