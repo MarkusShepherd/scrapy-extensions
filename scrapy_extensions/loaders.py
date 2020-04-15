@@ -6,9 +6,13 @@ import json
 
 import jmespath
 
+from pytility import normalize_space
 from scrapy.loader import ItemLoader
+from scrapy.loader.processors import Identity, MapCompose, TakeFirst
 from scrapy.utils.misc import arg_to_iter
 from scrapy.utils.python import flatten
+
+from .items import ArticleItem, WebpageItem
 
 
 class JsonLoader(ItemLoader):
@@ -16,7 +20,7 @@ class JsonLoader(ItemLoader):
 
     def __init__(self, response=None, json_obj=None, **kwargs):
         response = response if hasattr(response, "text") else None
-        super(JsonLoader, self).__init__(response=response, **kwargs)
+        super().__init__(response=response, **kwargs)
 
         if json_obj is None and response is not None:
             json_obj = json.loads(response.text)
@@ -47,3 +51,17 @@ class JsonLoader(ItemLoader):
 
         values = self._get_jmes_values(jmes)
         return self.get_value(values, *processors, **kw)
+
+
+class WebpageLoader(ItemLoader):
+    """Webpage item loader."""
+
+    default_item_class = WebpageItem
+    default_input_processor = MapCompose(Identity(), str, normalize_space)
+    default_output_processor = TakeFirst()
+
+
+class ArticleLoader(WebpageLoader):
+    """Article item loader."""
+
+    default_item_class = ArticleItem
