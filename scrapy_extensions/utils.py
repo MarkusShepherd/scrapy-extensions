@@ -5,9 +5,9 @@
 import json
 
 from urllib.parse import ParseResult, urlparse
-from typing import Iterable, Optional, Pattern, Union
+from typing import Any, Iterable, Optional, Pattern, Union
 
-from pytility import parse_date
+from pytility import parse_date, to_str
 from scrapy.utils.misc import arg_to_iter
 
 
@@ -67,9 +67,25 @@ def validate_url(
     )
 
 
-def parse_json(item):
-    # TODO
-    return json.loads(item)
+def parse_json(
+    file_or_string: Any, **kwargs
+) -> Union[str, float, int, list, dict, None]:
+    """Safely parse JSON string."""
+
+    if file_or_string is None:
+        return None
+
+    try:
+        return json.load(file_or_string, **kwargs)
+    except Exception:
+        pass
+
+    try:
+        return json.loads(to_str(file_or_string), **kwargs)
+    except Exception:
+        pass
+
+    return None
 
 
 def serialize_date(date, tzinfo=None):
