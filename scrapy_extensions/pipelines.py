@@ -5,6 +5,7 @@
 import logging
 
 from scrapy.exceptions import DropItem
+from scrapy.pipelines.images import ImagesPipeline
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,4 +27,15 @@ class ValidatePipeline:
         if missing:
             raise DropItem(f"required fields missing {missing} from item {item}")
 
+        return item
+
+
+class BlurImagesPipeline(ImagesPipeline):
+    """TODO."""
+
+    def item_completed(self, results, item, info):
+        item = super().item_completed(results, item, info)
+        LOGGER.info(results)
+        LOGGER.info(item)
+        LOGGER.info(info)
         return item
