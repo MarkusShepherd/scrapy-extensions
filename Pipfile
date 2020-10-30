@@ -7,9 +7,10 @@ verify_ssl = true
 python_version = "3.7"
 
 [packages]
-blurhash-python = "*"
+blurhash-numba = {extras = ["pillow"], version = "*"}
 "html2text" = "*"
 jmespath = "*"
+numpy = "*"
 pillow = ">=4.0.0"
 python-geohash = "*"
 pytility = "*"
