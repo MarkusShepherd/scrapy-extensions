@@ -7,8 +7,9 @@ import logging
 import re
 
 from datetime import timezone
+from pathlib import Path
 from urllib.parse import ParseResult, urlparse
-from typing import Any, Dict, Iterable, Optional, Pattern, Union
+from typing import Any, Dict, Iterable, Optional, Pattern, Tuple, Union
 
 from pytility import parse_date, to_str
 from scrapy.utils.misc import arg_to_iter
@@ -168,3 +169,21 @@ def serialize_geo(geo: Any) -> Optional[str]:
 
     geo = parse_geo(geo)
     return "{lat:f},{lon:f}".format(**geo) if geo else None
+
+
+def calculate_blurhash(
+    image_path: Union[str, Path], x_components: int = 4, y_components: int = 4,
+) -> str:
+    """Calculate the blurhash of a given image."""
+
+    import numpy as np
+    from blurhash_numba import encode
+    from PIL import Image, ImageOps
+
+    image = Image.open(image_path)
+    image = ImageOps.fit(image=image, size=(128, 128), centering=(0.5, 0))
+    image_array = np.array(image.convert("RGB"), dtype=np.float)
+
+    return encode(
+        image=image_array, x_components=x_components, y_components=y_components
+    )
