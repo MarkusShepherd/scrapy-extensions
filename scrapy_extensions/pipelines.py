@@ -38,6 +38,8 @@ class BlurImagesPipeline(ImagesPipeline):
 
     cache: Dict[str, str]
 
+    # TODO persistent cache, e.g., https://docs.python.org/3/library/dbm.html
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.cache = {}
