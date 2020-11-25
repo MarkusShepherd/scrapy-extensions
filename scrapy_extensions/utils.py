@@ -183,8 +183,9 @@ def calculate_blurhash(
     from PIL import Image, ImageOps
 
     image = image if isinstance(image, Image.Image) else Image.open(image)
-    # TODO use aspect ratio of given components
-    image = ImageOps.fit(image=image, size=(128, 128), centering=(0.5, 0))
+    image = ImageOps.fit(
+        image=image, size=(32 * x_components, 32 * y_components), centering=(0.5, 0)
+    )
     image = np.array(image.convert("RGB"), dtype=np.float)
 
     return encode(image=image, x_components=x_components, y_components=y_components)
