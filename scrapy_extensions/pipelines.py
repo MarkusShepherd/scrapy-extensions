@@ -36,13 +36,13 @@ class ValidatePipeline:
 class BlurImagesPipeline(ImagesPipeline):
     """Calculate the blurhash of a given image."""
 
-    cache: Dict[str, str]
+    _cache: Dict[str, str]
 
     # TODO persistent cache, e.g., https://docs.python.org/3/library/dbm.html
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.cache = {}
+        self._cache = {}
 
     # pylint: disable=no-self-use
     def calculate_blurhash(self, image, x_components=4, y_components=4):
@@ -57,22 +57,35 @@ class BlurImagesPipeline(ImagesPipeline):
 
         return None
 
+    def blurhash_from_cache(self, image_path):
+        """Try to find a give image's blurhash in the cache."""
+
+        blurhash = self._cache.get(image_path)
+        return blurhash or None
+
+    def blurhash_to_cache(self, image_path, blurhash):
+        """Write the image's blurhash to the cache."""
+
+        self._cache[image_path] = blurhash
+
     def blurhash_for_path(self, image_path):
         """Find blurhash in cache, or else load image and calculate it."""
 
-        blurhash = self.cache.get(image_path)
+        blurhash = self.blurhash_from_cache(image_path)
 
         if blurhash:
             return blurhash
 
         try:
             full_path = self.store._get_filesystem_path(image_path)
-            self.cache[image_path] = self.calculate_blurhash(full_path)
-            LOGGER.debug("blurhash: %s = %s", full_path, self.cache[image_path])
+            blurhash = self.calculate_blurhash(full_path)
+            LOGGER.debug("blurhash: %s = %s", full_path, blurhash)
         except Exception:
-            self.cache[image_path] = None
+            blurhash = None
 
-        return self.cache[image_path]
+        self.blurhash_to_cache(image_path, blurhash)
+
+        return blurhash
 
     def add_blurhash(self, image_obj):
         """Add blurhash to image objects."""
@@ -83,8 +96,9 @@ class BlurImagesPipeline(ImagesPipeline):
         for path, image, buf in super().get_images(
             response=response, request=request, info=info, item=item
         ):
-            self.cache[path] = self.calculate_blurhash(image)
-            LOGGER.debug("blurhash: %s = %s", path, self.cache[path])
+            blurhash = self.calculate_blurhash(image)
+            LOGGER.debug("blurhash: %s = %s", path, blurhash)
+            self.blurhash_to_cache(path, blurhash)
             yield path, image, buf
 
     def item_completed(self, results, item, info):
