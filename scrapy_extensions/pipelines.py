@@ -3,6 +3,7 @@
 """ Scrapy item pipelines """
 
 import logging
+import sqlite3
 
 from typing import Dict
 
@@ -40,8 +41,10 @@ class BlurImagesPipeline(ImagesPipeline):
 
     # TODO persistent cache, e.g., https://docs.python.org/3/library/dbm.html
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, store_uri, download_func=None, settings=None):
+        super().__init__(
+            store_uri=store_uri, download_func=download_func, settings=settings
+        )
         self._cache = {}
 
     # pylint: disable=no-self-use
@@ -113,3 +116,19 @@ class BlurImagesPipeline(ImagesPipeline):
         ]
 
         return item
+
+
+class SqliteBlurImagesPipeline(BlurImagesPipeline):
+    """TODO."""
+
+    _conn: sqlite3.Connection
+
+    def __init__(self, store_uri, download_func=None, settings=None):
+        super().__init__(
+            store_uri=store_uri, download_func=download_func, settings=settings
+        )
+        self._conn = self.init_db(settings.get("TODO"))
+
+    def init_db(self, db_path=":memory:"):
+        """TODO."""
+        return sqlite3.connect(db_path)

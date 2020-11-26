@@ -184,7 +184,7 @@ def calculate_blurhash(
 
     image = image if isinstance(image, Image.Image) else Image.open(image)
     image = ImageOps.fit(
-        image=image, size=(32 * x_components, 32 * y_components), centering=(0.5, 0)
+        image=image, size=(32 * x_components, 32 * y_components), centering=(0.5, 0),
     )
     image = np.array(image.convert("RGB"), dtype=np.float)
 
