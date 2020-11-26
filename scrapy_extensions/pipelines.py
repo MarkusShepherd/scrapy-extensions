@@ -60,16 +60,16 @@ class BlurImagesPipeline(ImagesPipeline):
 
         return None
 
+    def blurhash_to_cache(self, image_path, blurhash):
+        """Write the image's blurhash to the cache."""
+
+        self._cache[image_path] = blurhash
+
     def blurhash_from_cache(self, image_path):
         """Try to find a give image's blurhash in the cache."""
 
         blurhash = self._cache.get(image_path)
         return blurhash or None
-
-    def blurhash_to_cache(self, image_path, blurhash):
-        """Write the image's blurhash to the cache."""
-
-        self._cache[image_path] = blurhash
 
     def blurhash_for_path(self, image_path):
         """Find blurhash in cache, or else load image and calculate it."""
@@ -125,10 +125,28 @@ class SqliteBlurImagesPipeline(BlurImagesPipeline):
 
     def __init__(self, store_uri, download_func=None, settings=None):
         super().__init__(
-            store_uri=store_uri, download_func=download_func, settings=settings
+            store_uri=store_uri, download_func=download_func, settings=settings,
         )
         self._conn = self.init_db(settings.get("TODO"))
 
-    def init_db(self, db_path=":memory:"):
-        """TODO."""
-        return sqlite3.connect(db_path)
+    def init_db(self, db_path: str = ":memory:") -> sqlite3.Connection:
+        """Initialise Sqlite database connection."""
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("CREATE TABLE")  # TODO
+        conn.commit()
+        return conn
+
+    def blurhash_to_cache(self, image_path, blurhash):
+        """Write the image's blurhash to the database."""
+        # TODO implement
+        super().blurhash_to_cache(image_path, blurhash)
+
+    def blurhash_from_cache(self, image_path):
+        """Try to find a give image's blurhash in the database."""
+        # TODO implement
+        return super().blurhash_from_cache(image_path)
+
+    def close_spider(self, spider=None):
+        """Close the connection when the spider is closing."""
+        self._conn.close()
