@@ -91,24 +91,34 @@ class BlurHashPipeline:
 
     @lru_cache(maxsize=1024)
     def _calculate_blurhash(
-        self, *, path: Path, x_components: int, y_components: int
+        self,
+        *,
+        path: Path,
+        x_components: int,
+        y_components: int,
     ) -> Optional[str]:
         try:
             from scrapy_extensions.utils import calculate_blurhash
 
-            return calculate_blurhash(
+            blurhash = calculate_blurhash(
                 image=path,
                 x_components=x_components,
                 y_components=y_components,
             )
 
+            LOGGER.debug("BlurHash of <%s> is <%s>", path, blurhash)
+
         except Exception:
             LOGGER.exception("Unable to calculate BlurHash for image <%s>", path)
+            blurhash = None
 
-        return None
+        return blurhash
 
     def process_image_obj(
-        self, image_obj: Dict[str, Any], x_components: int = 4, y_components: int = 4
+        self,
+        image_obj: Dict[str, Any],
+        x_components: int = 4,
+        y_components: int = 4,
     ) -> Dict[str, Any]:
         """TODO."""
 
@@ -120,6 +130,9 @@ class BlurHashPipeline:
         if not image_full_path or not image_full_path.is_file():
             LOGGER.warning("Unable to locate image file <%s>", image_full_path)
             return image_obj
+
+        # Don't modify the original object
+        image_obj = image_obj.copy()
 
         image_obj["blurhash"] = self._calculate_blurhash(
             path=image_full_path,
