@@ -7,6 +7,7 @@ import logging
 import re
 
 from datetime import timezone
+from pathlib import Path
 from urllib.parse import ParseResult, urlparse
 from typing import Any, Dict, Iterable, Optional, Pattern, Union
 
@@ -168,3 +169,23 @@ def serialize_geo(geo: Any) -> Optional[str]:
 
     geo = parse_geo(geo)
     return "{lat:f},{lon:f}".format(**geo) if geo else None
+
+
+def calculate_blurhash(
+    image: Union[str, Path, "PIL.Image.Image"],
+    x_components: int = 4,
+    y_components: int = 4,
+) -> str:
+    """Calculate the blurhash of a given image."""
+
+    import numpy as np
+    from blurhash_numba import encode
+    from PIL import Image, ImageOps
+
+    image = image if isinstance(image, Image.Image) else Image.open(image)
+    image = ImageOps.fit(
+        image=image, size=(32 * x_components, 32 * y_components), centering=(0.5, 0),
+    )
+    image = np.array(image.convert("RGB"), dtype=np.float)
+
+    return encode(image=image, x_components=x_components, y_components=y_components)
