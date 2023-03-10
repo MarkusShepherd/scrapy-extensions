@@ -4,10 +4,10 @@
 
 import logging
 import sqlite3
+from pathlib import Path
+from typing import Any, Dict, Union
 
-from typing import Dict
-
-from scrapy.exceptions import DropItem
+from scrapy.exceptions import DropItem, NotConfigured
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.utils.misc import arg_to_iter
 
@@ -30,6 +30,61 @@ class ValidatePipeline:
 
         if missing:
             raise DropItem(f"required fields missing {missing} from item {item}")
+
+        return item
+
+
+class BlurHashPipeline:
+    """TODO."""
+
+    images_store: Path
+    source_field: str
+    target_field: str
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        """Init from crawler."""
+
+        images_store = crawler.settings.get("IMAGES_STORE")
+        source_field = crawler.settings.get("IMAGES_RESULT_FIELD")
+        target_field = crawler.settings.get("BLUR_HASH_FIELD")
+
+        if not images_store or not source_field or not target_field:
+            raise NotConfigured
+
+        return cls(
+            images_store=images_store,
+            source_field=source_field,
+            target_field=target_field,
+        )
+
+    def __init__(
+        self,
+        images_store: Union[str, Path],
+        source_field: str,
+        target_field: str,
+    ):
+        self.images_store = Path(images_store).resolve()
+        self.source_field = source_field
+        self.target_field = target_field
+
+    def process_image_obj(self, image_obj: Dict[str, Any]) -> Dict[str, Any]:
+        """TODO."""
+
+        # TODO calculate BlurHash and add to the dict
+        return image_obj
+
+    def process_item(self, item, spider):
+        """TODO."""
+
+        # adding target field would result in error; return item as-is
+        if hasattr(item, "fields") and self.target_field not in item.fields:
+            return item
+
+        item[self.target_field] = [
+            self.process_image_obj(image_obj)
+            for image_obj in arg_to_iter(item.get(self.source_field))
+        ]
 
         return item
 
@@ -125,7 +180,9 @@ class SqliteBlurImagesPipeline(BlurImagesPipeline):
 
     def __init__(self, store_uri, download_func=None, settings=None):
         super().__init__(
-            store_uri=store_uri, download_func=download_func, settings=settings,
+            store_uri=store_uri,
+            download_func=download_func,
+            settings=settings,
         )
         self._conn = self.init_db(settings.get("TODO"))
 
