@@ -4,8 +4,9 @@
 
 import logging
 import sqlite3
+from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Any, Dict, Optional, Union
 
 from scrapy.exceptions import DropItem, NotConfigured
 from scrapy.pipelines.images import ImagesPipeline
@@ -40,6 +41,8 @@ class BlurHashPipeline:
     images_store: Path
     source_field: str
     target_field: str
+    x_components: int
+    y_components: int
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -47,7 +50,7 @@ class BlurHashPipeline:
 
         images_store = crawler.settings.get("IMAGES_STORE")
         source_field = crawler.settings.get("IMAGES_RESULT_FIELD")
-        target_field = crawler.settings.get("BLUR_HASH_FIELD")
+        target_field = crawler.settings.get("BLURHASH_FIELD")
 
         if not images_store or not source_field or not target_field:
             raise NotConfigured
@@ -60,26 +63,70 @@ class BlurHashPipeline:
             )
             raise NotConfigured from exc
 
+        x_components = crawler.settings.getint("BLURHASH_X_COMPONENTS", 4)
+        y_components = crawler.settings.getint("BLURHASH_Y_COMPONENTS", 4)
+
         return cls(
             images_store=images_store,
             source_field=source_field,
             target_field=target_field,
+            x_components=x_components,
+            y_components=y_components,
         )
 
     def __init__(
         self,
+        *,
         images_store: Union[str, Path],
         source_field: str,
         target_field: str,
+        x_components: int = 4,
+        y_components: int = 4,
     ):
         self.images_store = Path(images_store).resolve()
         self.source_field = source_field
         self.target_field = target_field
+        self.x_components = x_components
+        self.y_components = y_components
 
-    def process_image_obj(self, image_obj: Dict[str, Any]) -> Dict[str, Any]:
+    @lru_cache(maxsize=1024)
+    def _calculate_blurhash(
+        self, *, path: Path, x_components: int, y_components: int
+    ) -> Optional[str]:
+        try:
+            from scrapy_extensions.utils import calculate_blurhash
+
+            return calculate_blurhash(
+                image=path,
+                x_components=x_components,
+                y_components=y_components,
+            )
+
+        except Exception:
+            LOGGER.exception("Unable to calculate BlurHash for image <%s>", path)
+
+        return None
+
+    def process_image_obj(
+        self, image_obj: Dict[str, Any], x_components: int = 4, y_components: int = 4
+    ) -> Dict[str, Any]:
         """TODO."""
 
-        # TODO calculate BlurHash and add to the dict
+        image_path = image_obj.get("path")
+        if not image_path:
+            return image_obj
+
+        image_full_path = (self.images_store / image_path).resolve()
+        if not image_full_path or not image_full_path.is_file():
+            LOGGER.warning("Unable to locate image file <%s>", image_full_path)
+            return image_obj
+
+        image_obj["blurhash"] = self._calculate_blurhash(
+            path=image_full_path,
+            x_components=x_components,
+            y_components=y_components,
+        )
+
         return image_obj
 
     def process_item(self, item, spider):
