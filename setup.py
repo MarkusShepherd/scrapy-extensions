@@ -10,7 +10,7 @@ import os
 import sys
 from shutil import rmtree
 
-from setuptools import find_packages, setup, Command
+from setuptools import Command, find_packages, setup
 
 # Package meta-data.
 NAME = "scrapy-extensions"
@@ -25,6 +25,7 @@ KEYWORDS = (
     "loggers",
     "middleware",
     "pipelines",
+    "blurhash",
 )
 URL_HOMEPAGE = "https://gitlab.com/mshepherd/scrapy-extensions"
 URL_DOCUMENTATION = (
@@ -36,17 +37,31 @@ URL_SOURCE = "https://gitlab.com/mshepherd/scrapy-extensions"
 URL_TRACKER = "https://gitlab.com/mshepherd/scrapy-extensions/issues"
 EMAIL = "markus.r.shepherd@gmail.com"
 AUTHOR = "Markus Shepherd"
-REQUIRES_PYTHON = ">=3.6.0"
+REQUIRES_PYTHON = ">=3.7.0"
 VERSION = None  # will be read from __version__.py
 
 # What packages are required for this module to be executed?
-REQUIRED = ("pytility", "jmespath", "Scrapy", "Twisted", "w3lib")
+REQUIRED = (
+    "itemadapter",
+    "jmespath",
+    "pytility",
+    "Scrapy",
+    "Twisted",
+    "w3lib",
+)
 
 # What packages are optional?
 EXTRAS = {
-    "articles": ("html2text", "readability-lxml"),
+    "articles": (
+        "html2text",
+        "readability-lxml",
+    ),
     "geo": ("python-geohash",),
-    "images": ("blurhash-numba[pillow]", "numpy", "Pillow>=4.0.0"),
+    "images": (
+        "blurhash-numba[pillow]",
+        "numpy",
+        "Pillow>=4.0.0",
+    ),
 }
 
 # The rest you shouldn't have to touch too much :)
@@ -147,9 +162,11 @@ setup(
         "Framework :: Scrapy",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     # $ setup.py publish support.
     cmdclass={"upload": UploadCommand},
