@@ -146,10 +146,13 @@ class BlurHashPipeline:
 
         adapter = ItemAdapter(item)
 
+        image_objs = tuple(arg_to_iter(adapter.get(self.source_field)))
+        if not image_objs:
+            return item
+
         try:
             adapter[self.target_field] = [
-                self.process_image_obj(image_obj)
-                for image_obj in arg_to_iter(item.get(self.source_field))
+                self.process_image_obj(image_obj) for image_obj in image_objs
             ]
         except Exception:
             LOGGER.exception("Unable to add field <%s> to the item", self.target_field)
