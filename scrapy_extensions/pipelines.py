@@ -7,6 +7,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
+from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem, NotConfigured
 from scrapy.utils.misc import arg_to_iter
 
@@ -143,13 +144,14 @@ class BlurHashPipeline:
     def process_item(self, item, spider):
         """Calculate the BlurHashes of the downloaded images."""
 
-        # adding target field would result in error; return item as-is
-        if hasattr(item, "fields") and self.target_field not in item.fields:
-            return item
+        adapter = ItemAdapter(item)
 
-        item[self.target_field] = [
-            self.process_image_obj(image_obj)
-            for image_obj in arg_to_iter(item.get(self.source_field))
-        ]
+        try:
+            adapter[self.target_field] = [
+                self.process_image_obj(image_obj)
+                for image_obj in arg_to_iter(item.get(self.source_field))
+            ]
+        except Exception:
+            LOGGER.exception("Unable to add field <%s> to the item", self.target_field)
 
         return item
