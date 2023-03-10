@@ -52,6 +52,14 @@ class BlurHashPipeline:
         if not images_store or not source_field or not target_field:
             raise NotConfigured
 
+        try:
+            from scrapy_extensions.utils import calculate_blurhash
+        except ImportError as exc:
+            LOGGER.exception(
+                "Unable to import libraries required for BlurHash, install with `images` option",
+            )
+            raise NotConfigured from exc
+
         return cls(
             images_store=images_store,
             source_field=source_field,
