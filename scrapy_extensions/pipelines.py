@@ -36,7 +36,7 @@ class ValidatePipeline:
 
 
 class BlurHashPipeline:
-    """TODO."""
+    """Calculate the BlurHashes of the downloaded images."""
 
     images_store: Path
     source_field: str
@@ -120,7 +120,7 @@ class BlurHashPipeline:
         x_components: int = 4,
         y_components: int = 4,
     ) -> Dict[str, Any]:
-        """TODO."""
+        """Calculate the BlurHash of a given image."""
 
         image_path = image_obj.get("path")
         if not image_path:
@@ -143,7 +143,7 @@ class BlurHashPipeline:
         return image_obj
 
     def process_item(self, item, spider):
-        """TODO."""
+        """Calculate the BlurHashes of the downloaded images."""
 
         # adding target field would result in error; return item as-is
         if hasattr(item, "fields") and self.target_field not in item.fields:
