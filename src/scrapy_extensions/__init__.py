@@ -7,8 +7,4 @@
 # - ValidatePipeline
 # - BlurHashPipeline
 
-from scrapy_extensions.loaders import JsonLoader
-
-__all__ = [
-    "JsonLoader",
-]
+# __all__ = []
