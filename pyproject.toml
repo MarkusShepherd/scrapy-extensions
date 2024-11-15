@@ -34,6 +34,12 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.9.0, <4.0"
 
+itemadapter = "*"
+jmespath = "*"
+scrapy = ">=2.0.0, <3.0.0"
+twisted = "*"
+w3lib = ">=2.0.0, <3.0"
+
 [tool.poetry.group.dev.dependencies]
 mkdocstrings = {version = ">=0.23", extras = ["python"]}
 mkdocs-material = "*"
@@ -45,6 +51,7 @@ pytest-github-actions-annotate-failures = "*"
 pytest-cov = "*"
 python-kacl = "*"
 ruff = ">=0.2.0"
+types-jmespath = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
