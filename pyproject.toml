@@ -34,11 +34,17 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.9.0, <4.0"
 
+blurhash-numba = {version = "*", extras=["pillow"], optional = true}
 itemadapter = "*"
 jmespath = "*"
+numpy = {version = "*", optional = true}
+pillow = {version = ">=4.0.0", optional = true}
 scrapy = ">=2.0.0, <3.0.0"
 twisted = "*"
 w3lib = ">=2.0.0, <3.0"
+
+[tool.poetry.extras]
+blurhash = ["blurhash-numba", "numpy", "pillow"]
 
 [tool.poetry.group.dev.dependencies]
 mkdocstrings = {version = ">=0.23", extras = ["python"]}
