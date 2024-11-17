@@ -126,6 +126,7 @@ disallow_subclassing_any = false
 # For example:
 [[tool.mypy.overrides]]
 module = [
+    "blurhash_numba.*",
     "itemadapter.*",
     "scrapy.*",
 ]
