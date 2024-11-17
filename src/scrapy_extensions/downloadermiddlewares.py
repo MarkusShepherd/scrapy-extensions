@@ -9,12 +9,12 @@ from typing import TYPE_CHECKING, Callable
 from scrapy.downloadermiddlewares.retry import RetryMiddleware, get_retry_request
 from scrapy.exceptions import NotConfigured
 from scrapy.utils.response import response_status_message
-from twisted.internet import defer, reactor
 
 if TYPE_CHECKING:
     from scrapy import Request, Spider
     from scrapy.http import Response
     from scrapy.settings import Settings
+    from twisted.internet import defer
 
 LOGGER = logging.getLogger(__name__)
 
@@ -78,6 +78,8 @@ class DelayedRetryMiddleware(RetryMiddleware):
         reason: str,
         spider: Spider,
     ) -> defer.Deferred[Callable[..., Response]] | None:
+        from twisted.internet import defer, reactor
+
         max_retry_times = request.meta.get(
             "max_retry_times",
             self.delayed_retry_max_retry_times,
