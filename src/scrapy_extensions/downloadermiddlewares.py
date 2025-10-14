@@ -57,12 +57,12 @@ class DelayedRetryMiddleware(RetryMiddleware):
             10 * self.delayed_retry_delay,
         )
 
-    def process_response(
+    def process_response(  # type: ignore[override]
         self,
         request: Request,
         response: Response,
         spider: Spider,
-    ) -> Response | defer.Deferred[Callable[..., Response]]:
+    ) -> Request | Response | defer.Deferred[Callable[..., Response]]:
         """retry certain requests with delay"""
 
         if request.meta.get("dont_retry"):
