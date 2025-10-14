@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import logging
 import sys
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 from scrapy.downloadermiddlewares.retry import RetryMiddleware, get_retry_request
 from scrapy.exceptions import NotConfigured
 from scrapy.utils.response import response_status_message
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from scrapy import Request, Spider
     from scrapy.http import Response
     from scrapy.settings import Settings

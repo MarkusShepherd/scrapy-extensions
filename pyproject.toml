@@ -58,6 +58,7 @@ pytest-cov = "*"
 python-kacl = "*"
 ruff = ">=0.2.0"
 types-jmespath = "*"
+types-pillow = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -80,6 +81,7 @@ ignore = [
     "TD",       # TODO
     "FIX",      # FIXME,
     "S101",     # "Use of `assert` detected"
+    "PLC0415",  # `import` should be at the top-level of a file
 ]
 
 [tool.ruff.lint.per-file-ignores]
