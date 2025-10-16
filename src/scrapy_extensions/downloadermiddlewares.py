@@ -1,7 +1,14 @@
-"""Scrapy downloader middleware"""
+"""Scrapy downloader middleware (async/await rewrite)
+
+This middleware preserves the same behaviour as the original Deferred-based
+implementation but uses Python coroutines (`async`/`await`) and
+`asyncio.sleep` for the delay. The public behaviour (delayed retries,
+backoff, priority adjust, config keys) is unchanged.
+"""
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import sys
 from typing import TYPE_CHECKING
@@ -11,18 +18,25 @@ from scrapy.exceptions import NotConfigured
 from scrapy.utils.response import response_status_message
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from scrapy import Request, Spider
     from scrapy.http import Response
     from scrapy.settings import Settings
-    from twisted.internet import defer
 
 LOGGER = logging.getLogger(__name__)
 
 
 class DelayedRetryMiddleware(RetryMiddleware):
-    """retry requests with a delay"""
+    """retry requests with a delay (async/await version)
+
+    Notes
+    -----
+    - Uses `asyncio.sleep` to implement the delay.
+    - `process_response` is an async coroutine; Scrapy accepts coroutines from
+      middleware methods and will await them appropriately when using an
+      asyncio-compatible reactor.
+    - Behaviour and configuration keys are kept compatible with the original
+      implementation.
+    """
 
     def __init__(
         self,
@@ -57,30 +71,41 @@ class DelayedRetryMiddleware(RetryMiddleware):
             10 * self.delayed_retry_delay,
         )
 
-    def process_response(  # type: ignore[override]
+    async def process_response(  # type: ignore[override]
         self,
         request: Request,
         response: Response,
         spider: Spider,
-    ) -> Request | Response | defer.Deferred[Callable[..., Response]]:
-        """retry certain requests with delay"""
+    ) -> Request | Response:
+        """retry certain requests with delay
+
+        This method is now a coroutine. If the response status matches a
+        delayed-retry code, we await the computed delay and then return the
+        retry Request (or None, in which case the original response is
+        returned). Otherwise we delegate to the parent implementation.
+        """
 
         if request.meta.get("dont_retry"):
             return response
 
         if response.status in self.delayed_retry_http_codes:
             reason = response_status_message(response.status)
-            return self._delayed_retry(request, reason, spider) or response
+            req = await self._delayed_retry(request, reason, spider)
+            return req or response
 
-        return super().process_response(request, response, spider)
+        # Delegate to parent. The parent may return a value or a Deferred/coroutine.
+        parent_result = super().process_response(request, response, spider)
+        if asyncio.iscoroutine(parent_result):
+            return await parent_result  # type: ignore[no-any-return]
+        return parent_result
 
-    def _delayed_retry(
+    async def _delayed_retry(
         self,
         request: Request,
         reason: str,
         spider: Spider,
-    ) -> defer.Deferred[Callable[..., Response]] | None:
-        from twisted.internet import defer, reactor
+    ) -> Request | None:
+        """Compute retry Request and await the configured delay before returning it."""
 
         max_retry_times = request.meta.get(
             "max_retry_times",
@@ -113,8 +138,6 @@ class DelayedRetryMiddleware(RetryMiddleware):
 
         LOGGER.debug("Retry request %r in %.1f second(s)", req, delay)
 
-        deferred: defer.Deferred[Callable[..., Response]] = defer.Deferred()
-        deferred.addCallback(lambda req: req)
-        reactor.callLater(delay, deferred.callback, req)  # type: ignore[attr-defined]
-
-        return deferred
+        # Non-blocking sleep — preserves reactor responsiveness in asyncio mode.
+        await asyncio.sleep(delay)
+        return req
