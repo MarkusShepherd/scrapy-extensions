@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "scrapy-extensions"
-version = "1.0.2"
+version = "1.1.0"
 description = "A collection of Scrapy extensions and other utilities"
 authors = [
     "Markus Shepherd <markus@recommend.games>",

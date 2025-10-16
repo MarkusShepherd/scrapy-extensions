@@ -6,14 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-10-16
+
 ### Changed
 
 - Added support for Py3.14; dropped Py3.9
-- Rewrite DelayedRetryMiddleware to use async instead of Twisted Deferred
+- Rewrite `DelayedRetryMiddleware` to use async instead of Twisted Deferred
 
 ### Added
 
-- Added AuthHeaderMiddleware from board-game-scraper
+- Added `AuthHeaderMiddleware` from [board-game-scraper](https://gitlab.com/recommend.games/board-game-scraper)
 
 ## [1.0.2] - 2024-11-18
 
@@ -38,7 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - `NicerAutoThrottle`
   - `QuietLogFormatter`
 
-[Unreleased]: https://github.com/MarkusShepherd/scrapy-extensions/compare/1.0.2...master
+[Unreleased]: https://github.com/MarkusShepherd/scrapy-extensions/compare/1.1.0...master
+[1.1.0]: https://github.com/MarkusShepherd/scrapy-extensions/compare/1.0.2...1.1.0
 [1.0.2]: https://github.com/MarkusShepherd/scrapy-extensions/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/MarkusShepherd/scrapy-extensions/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/MarkusShepherd/scrapy-extensions/tree/1.0.0
