@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added support for Py3.14; dropped Py3.9
 - Rewrite DelayedRetryMiddleware to use async instead of Twisted Deferred
 
+### Added
+
+- Added AuthHeaderMiddleware from board-game-scraper
+
 ## [1.0.2] - 2024-11-18
 
 ### Fixed
