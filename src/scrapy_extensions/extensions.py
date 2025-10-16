@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 from scrapy.extensions.throttle import AutoThrottle
 from scrapy.signals import spider_closed, spider_opened
@@ -11,7 +11,7 @@ from scrapy.utils.misc import arg_to_iter
 from twisted.internet.task import LoopingCall
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Callable, Iterable
 
     from scrapy import Spider
     from scrapy.core.downloader import Slot

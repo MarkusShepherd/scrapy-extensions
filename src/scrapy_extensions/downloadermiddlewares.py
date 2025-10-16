@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import logging
 import sys
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 from scrapy.downloadermiddlewares.retry import RetryMiddleware, get_retry_request
 from scrapy.exceptions import NotConfigured
 from scrapy.utils.response import response_status_message
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from scrapy import Request, Spider
     from scrapy.http import Response
     from scrapy.settings import Settings
@@ -55,12 +57,12 @@ class DelayedRetryMiddleware(RetryMiddleware):
             10 * self.delayed_retry_delay,
         )
 
-    def process_response(
+    def process_response(  # type: ignore[override]
         self,
         request: Request,
         response: Response,
         spider: Spider,
-    ) -> Response | defer.Deferred[Callable[..., Response]]:
+    ) -> Request | Response | defer.Deferred[Callable[..., Response]]:
         """retry certain requests with delay"""
 
         if request.meta.get("dont_retry"):

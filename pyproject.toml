@@ -18,11 +18,11 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Typing :: Typed",
 ]
@@ -32,7 +32,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9.0, <4.0"
+python = ">=3.10.0, <4.0"
 
 blurhash-numba = {version = "*", extras=["pillow"], optional = true}
 itemadapter = "*"
@@ -58,13 +58,14 @@ pytest-cov = "*"
 python-kacl = "*"
 ruff = ">=0.2.0"
 types-jmespath = "*"
+types-pillow = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
-target-version = "py39" # The lowest supported version
+target-version = "py310" # The lowest supported version
 
 [tool.ruff.lint]
 # By default, enable all the lint rules.
@@ -80,6 +81,7 @@ ignore = [
     "TD",       # TODO
     "FIX",      # FIXME,
     "S101",     # "Use of `assert` detected"
+    "PLC0415",  # `import` should be at the top-level of a file
 ]
 
 [tool.ruff.lint.per-file-ignores]

@@ -9,17 +9,18 @@ from scrapy.logformatter import LogFormatter
 if TYPE_CHECKING:
     from scrapy import Spider
     from scrapy.http import Response
+    from scrapy.logformatter import LogFormatterResult
 
 
 class QuietLogFormatter(LogFormatter):
     """Be quieter about scraped items."""
 
-    def scraped(
+    def scraped(  # type: ignore[override]
         self,
         item: Any,
         response: Response,
         spider: Spider,
-    ) -> dict[str, Any] | None:
+    ) -> LogFormatterResult | None:
         return (
             super().scraped(item, response, spider)
             if spider.settings.getbool("LOG_SCRAPED_ITEMS")
