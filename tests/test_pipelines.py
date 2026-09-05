@@ -82,11 +82,36 @@ def test_process_item_populates_target_field(tmp_path: Path, image_file: Path) -
     assert isinstance(result["blurhashes"][0]["blurhash"], str)
 
 
+def test_blurhash_libs_available_is_true_with_extra_installed() -> None:
+    # The test environment installs the `blurhash` extra.
+    assert pipelines._blurhash_libs_available() is True
+
+
+def test_blurhash_libs_available_detects_missing_module(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_find_spec(name: str) -> object:
+        return None if name == "numpy" else object()
+
+    monkeypatch.setattr(pipelines, "find_spec", fake_find_spec)
+    assert pipelines._blurhash_libs_available() is False
+
+
+def test_blurhash_libs_available_handles_missing_parent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def boom(*_a: object, **_kw: object) -> object:
+        raise ModuleNotFoundError
+
+    monkeypatch.setattr(pipelines, "find_spec", boom)
+    assert pipelines._blurhash_libs_available() is False
+
+
 def test_from_crawler_not_configured_without_blurhash_libs(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(pipelines, "find_spec", lambda *_a, **_kw: None)
+    monkeypatch.setattr(pipelines, "_blurhash_libs_available", lambda: False)
     crawler = get_crawler(Spider, {**_FULL_SETTINGS, "IMAGES_STORE": str(tmp_path)})
     with pytest.raises(NotConfigured):
         BlurHashPipeline.from_crawler(crawler)

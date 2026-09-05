@@ -18,6 +18,17 @@ if TYPE_CHECKING:
 
 LOGGER = logging.getLogger(__name__)
 
+#: Modules provided by the optional ``blurhash`` extra.
+_BLURHASH_MODULES = ("blurhash_numba", "numpy", "PIL")
+
+
+def _blurhash_libs_available() -> bool:
+    """Whether every module required for BlurHash calculation is importable."""
+    try:
+        return all(find_spec(module) is not None for module in _BLURHASH_MODULES)
+    except ModuleNotFoundError:
+        return False
+
 
 @lru_cache(maxsize=1024)
 def _calculate_blurhash(
@@ -63,7 +74,7 @@ class BlurHashPipeline:
         if not images_store or not source_field or not target_field:
             raise NotConfigured
 
-        if not find_spec("scrapy_extensions.utils", "calculate_blurhash"):
+        if not _blurhash_libs_available():
             LOGGER.error(
                 "Unable to import libraries required for BlurHash, "
                 "install with `blurhash` option",

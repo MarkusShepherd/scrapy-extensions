@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- `BlurHashPipeline.from_crawler` now actually checks that the optional
+  `blurhash` extra is installed before enabling the pipeline (the previous
+  `find_spec` call was a no-op and never detected missing libraries)
 - `DelayedRetryMiddleware` and `NicerAutoThrottle` now correctly raise
   `NotConfigured` / fall back when `*_HTTP_CODES` contain non-numeric values
   (the `ValueError` guard was previously dead code due to a lazy generator)
