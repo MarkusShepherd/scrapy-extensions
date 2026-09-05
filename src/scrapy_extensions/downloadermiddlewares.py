@@ -46,9 +46,9 @@ class DelayedRetryMiddleware(RetryMiddleware):
 
         delayed_retry_http_codes_settings = settings.getlist("DELAYED_RETRY_HTTP_CODES")
         try:
-            delayed_retry_http_codes = (
+            delayed_retry_http_codes = [
                 int(http_code) for http_code in delayed_retry_http_codes_settings
-            )
+            ]
         except ValueError as exc:
             LOGGER.exception(
                 "Invalid http code(s) in DELAYED_RETRY_HTTP_CODES: %s",

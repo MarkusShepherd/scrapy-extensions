@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- `DelayedRetryMiddleware` and `NicerAutoThrottle` now correctly raise
+  `NotConfigured` / fall back when `*_HTTP_CODES` contain non-numeric values
+  (the `ValueError` guard was previously dead code due to a lazy generator)
+
 ## [1.1.0] - 2025-10-16
 
 ### Changed
