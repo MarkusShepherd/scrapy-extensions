@@ -89,6 +89,9 @@ ignore = [
     "S101",     # "Use of `assert` detected"
     "ARG",      # "Unused function argument". Fixtures are often unused.
     "S105",     # "Possible hardcoded password".
+    "S106",     # "Possible hardcoded password" (function argument).
+    "SLF001",   # Tests legitimately poke at private members.
+    "PLR2004",  # Magic values in assertions are fine.
 ]
 
 [tool.ruff.lint.mccabe]
