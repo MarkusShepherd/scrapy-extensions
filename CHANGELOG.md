@@ -25,6 +25,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- `AuthHeaderMiddleware` is now importable from the top-level `scrapy_extensions`
+  package (it was added in 1.1.0 but only reachable via its full module path)
 - `BlurHashPipeline.from_crawler` now actually checks that the optional
   `blurhash` extra is installed before enabling the pipeline (the previous
   `find_spec` call was a no-op and never detected missing libraries)
