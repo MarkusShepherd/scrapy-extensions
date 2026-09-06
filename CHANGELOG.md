@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Dropped the unused direct `jmespath` and `w3lib` dependencies (both still
   come in transitively via Scrapy)
 - Removed the obsolete `v0/` source tree (pre-1.0 `setup.py` package)
+- Updated `pre-commit-hooks` (v4 → v6) and the CI `actionlint` version
 
 ### Added
 
