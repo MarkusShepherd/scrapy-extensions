@@ -35,13 +35,14 @@ packages = [
 python = ">=3.10.0, <4.0"
 
 blurhash-numba = {version = "*", extras=["pillow"], optional = true}
-itemadapter = "*"
-jmespath = "*"
+itemadapter = ">=0.4.0"
 numpy = {version = "*", optional = true}
 pillow = {version = ">=4.0.0", optional = true}
-scrapy = ">=2.0.0, <3.0.0"
-twisted = "*"
-w3lib = ">=2.0.0, <3.0"
+# 2.7 is the first release with asyncio-coroutine downloader middlewares
+# (DelayedRetryMiddleware.process_response) and get_retry_request().
+# CI always exercises the latest 2.x.
+scrapy = ">=2.7.0, <3.0.0"
+twisted = ">=21.7.0"
 
 [tool.poetry.extras]
 blurhash = ["blurhash-numba", "numpy", "pillow"]
@@ -57,7 +58,6 @@ pytest-github-actions-annotate-failures = "*"
 pytest-cov = "*"
 python-kacl = "*"
 ruff = ">=0.2.0"
-types-jmespath = "*"
 types-pillow = "*"
 
 [build-system]

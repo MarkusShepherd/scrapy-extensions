@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Raised the minimum Scrapy version to 2.7 (async downloader middlewares,
+  `get_retry_request`) and set sensible lower bounds for `itemadapter` and
+  `twisted`
+- Dropped the unused direct `jmespath` and `w3lib` dependencies (both still
+  come in transitively via Scrapy)
+
 ### Added
 
 - Test suite covering all modules (100% coverage)
