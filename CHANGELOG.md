@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   come in transitively via Scrapy)
 - Removed the obsolete `v0/` source tree (pre-1.0 `setup.py` package)
 - Updated `pre-commit-hooks` (v4 → v6) and the CI `actionlint` version
+- Migrated `pyproject.toml` to the standard PEP 621 `[project]` table
+  (requires `poetry-core` >= 2.0)
+- Bumped the `Development Status` classifier to Production/Stable
 
 ### Added
 
