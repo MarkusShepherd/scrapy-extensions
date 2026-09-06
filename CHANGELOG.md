@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Raised the minimum Scrapy version to 2.7 (async downloader middlewares,
+  `get_retry_request`) and set sensible lower bounds for `itemadapter` and
+  `twisted`
+- Dropped the unused direct `jmespath` and `w3lib` dependencies (both still
+  come in transitively via Scrapy)
+- Removed the obsolete `v0/` source tree (pre-1.0 `setup.py` package)
+- Updated `pre-commit-hooks` (v4 → v6) and the CI `actionlint` version
+- Migrated `pyproject.toml` to the standard PEP 621 `[project]` table
+  (requires `poetry-core` >= 2.0)
+- Bumped the `Development Status` classifier to Production/Stable
+
+### Added
+
+- Test suite covering all modules (100% coverage)
+
+### Fixed
+
+- `AuthHeaderMiddleware` is now importable from the top-level `scrapy_extensions`
+  package (it was added in 1.1.0 but only reachable via its full module path)
+- `BlurHashPipeline.from_crawler` now actually checks that the optional
+  `blurhash` extra is installed before enabling the pipeline (the previous
+  `find_spec` call was a no-op and never detected missing libraries)
+- `DelayedRetryMiddleware` and `NicerAutoThrottle` now correctly raise
+  `NotConfigured` / fall back when `*_HTTP_CODES` contain non-numeric values
+  (the `ValueError` guard was previously dead code due to a lazy generator)
+
 ## [1.1.0] - 2025-10-16
 
 ### Changed

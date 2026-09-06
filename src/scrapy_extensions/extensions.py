@@ -29,9 +29,9 @@ class NicerAutoThrottle(AutoThrottle):
         http_codes_settings = crawler.settings.getlist("AUTOTHROTTLE_HTTP_CODES")
 
         try:
-            http_codes = (
+            http_codes = [
                 int(http_code) for http_code in arg_to_iter(http_codes_settings)
-            )
+            ]
 
         except ValueError:
             LOGGER.exception("Invalid HTTP code: %s", http_codes_settings)

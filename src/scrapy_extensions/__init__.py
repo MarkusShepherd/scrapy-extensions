@@ -6,9 +6,11 @@
 from scrapy_extensions.downloadermiddlewares import DelayedRetryMiddleware
 from scrapy_extensions.extensions import LoopingExtension, NicerAutoThrottle
 from scrapy_extensions.loggers import QuietLogFormatter
+from scrapy_extensions.middlewares import AuthHeaderMiddleware
 from scrapy_extensions.pipelines import BlurHashPipeline
 
 __all__ = [
+    "AuthHeaderMiddleware",
     "BlurHashPipeline",
     "DelayedRetryMiddleware",
     "LoopingExtension",

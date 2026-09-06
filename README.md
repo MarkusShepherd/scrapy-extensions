@@ -29,23 +29,23 @@ pip install scrapy-extensions
 * Clone this repository
 * Requirements:
   * [Poetry](https://python-poetry.org/)
-  * Python 3.8+
+  * Python 3.10+
 * Create a virtual environment and install the dependencies
 
 ```sh
-poetry install
+poetry install --all-extras
 ```
 
-* Activate the virtual environment
+* Run a command inside the virtual environment
 
 ```sh
-poetry shell
+poetry run pytest
 ```
 
 ### Testing
 
 ```sh
-pytest
+poetry run pytest
 ```
 
 ### Documentation
