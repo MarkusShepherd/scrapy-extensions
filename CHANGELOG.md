@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-12
+
 ### Changed
 
 - Raised the minimum Scrapy version to 2.7 (async downloader middlewares,
@@ -68,7 +70,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - `NicerAutoThrottle`
   - `QuietLogFormatter`
 
-[Unreleased]: https://github.com/MarkusShepherd/scrapy-extensions/compare/1.1.0...master
+[Unreleased]: https://github.com/MarkusShepherd/scrapy-extensions/compare/1.2.0...master
+[1.2.0]: https://github.com/MarkusShepherd/scrapy-extensions/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/MarkusShepherd/scrapy-extensions/compare/1.0.2...1.1.0
 [1.0.2]: https://github.com/MarkusShepherd/scrapy-extensions/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/MarkusShepherd/scrapy-extensions/compare/1.0.0...1.0.1
